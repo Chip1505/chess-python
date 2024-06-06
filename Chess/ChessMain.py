@@ -11,9 +11,9 @@ MAX_FPS = 15
 IMAGES = {}
 
 def loadImages():
-    pieces = ['wp', 'wR', 'wN', 'wB', 'wK', 'wQ', 'bp', 'bR', 'bN', 'bB', 'bK', 'bQ']
+    pieces = ['bB', 'bK', 'bN', 'bp', 'bQ', 'bR', 'wB', 'wK', 'wN', 'wp', 'wQ', 'wR']
     for piece in pieces:
-        IMAGES[piece] = p.image.load("images/" + piece + ".png"), (SQ_SIZE, SQ_SIZE)
+        IMAGES[piece] = p.transform.scale(p.image.load("images/" + piece + ".png"), (SQ_SIZE, SQ_SIZE))
 
 def main():
     p.init()
@@ -27,6 +27,7 @@ def main():
         for e in p.event.get():
             if e.type == p.QUIT:
                 running = False
+        drawGameState(screen, gs)
         clock.tick(MAX_FPS)
         p.display.flip()
 
@@ -41,9 +42,16 @@ def drawBoard(screen):
         for c in range(DIMENSION):
             color = colors[((r+c) % 2)]
             p.draw.rect(screen, color, p.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+            
 
 def drawPieces(screen, board):
-    pass
+    for r in range(DIMENSION):
+        for c in range(DIMENSION):
+            piece = board[r][c]
+            if piece != "--":
+                print(piece)
+                screen.blit(IMAGES[piece], p.Rect(c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
 
 if __name__ == "__main__":
     main()
