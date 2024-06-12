@@ -22,6 +22,9 @@ def main():
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     gs =  ChessEngine.GameState()
+    validMoves = gs.getValidMoves()
+    moveMade = False #flag variable for when a move is made
+
     loadImages()
     running = True
     sqSelected = () #last user click as a tuple (row, col)
@@ -35,17 +38,28 @@ def main():
                 col = location[0] // SQ_SIZE
                 row = location[1] // SQ_SIZE
                 if sqSelected == (row, col):
-                    sqSelected = ()
-                    playerClicks = []
-                else:
+                    sqSelected = () #deselect
+                    playerClicks = [] #clear player clicks
+                else: 
                     sqSelected = (row, col)
                     playerClicks.append(sqSelected) #append both first and second clicks
-                if len(playerClicks) == 2:
+                if len(playerClicks) == 2: #after second click
                     move = ChessEngine.Move(playerClicks[0], playerClicks[1], gs.board)
                     print(move.getChessNotation())
-                    gs.makeMove(move)
-                    sqSelected = ()
+                    if move in validMoves:
+                        gs.makeMove(move)
+                        moveMade = True
+                    sqSelected = () #reset user clicks
                     playerClicks = []
+            #key handlers
+            elif e.type == p.KEYDOWN:
+                if e.key == p.K_z: #undo when z is pressed
+                    gs.undoMove()
+                    moveMade = True
+
+        if moveMade:
+            validMoves = gs.getValidMoves()
+            moveMade = False
 
         drawGameState(screen, gs)
         clock.tick(MAX_FPS)
